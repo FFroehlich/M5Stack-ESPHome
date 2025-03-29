@@ -68,14 +68,6 @@ async def to_code(config):
     await sensor.register_sensor(var, config)
     await cg.register_component(var, config)
 
-    if config[CONF_PIN] == "VCC":
-        cg.add_define("USE_ADC_SENSOR_VCC")
-    elif config[CONF_PIN] == "TEMPERATURE":
-        cg.add(var.set_is_temperature())
-    else:
-        pin = await cg.gpio_pin_expression(config[CONF_PIN])
-        cg.add(var.set_pin(pin))
-
     cg.add(var.set_output_raw(config[CONF_RAW]))
     cg.add(var.set_sample_count(config[CONF_SAMPLES]))
     cg.add(var.set_sampling_mode(config[CONF_SAMPLING_MODE]))
