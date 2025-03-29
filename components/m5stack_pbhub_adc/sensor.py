@@ -8,8 +8,6 @@ from esphome.components.adc.sensor import (
     SAMPLING_MODES,
     CONF_SAMPLES,
     CONF_SAMPLING_MODE,
-    CORE,
-    get_esp32_variant,
     _attenuation, 
     _sampling_mode,
 )
@@ -79,19 +77,3 @@ async def to_code(config):
             cg.add(var.set_autorange(cg.global_ns.true))
         else:
             cg.add(var.set_attenuation(attenuation))
-
-    if CORE.is_esp32:
-        variant = get_esp32_variant()
-        pin_num = config[CONF_PIN][CONF_NUMBER]
-        if (
-            variant in ESP32_VARIANT_ADC1_PIN_TO_CHANNEL
-            and pin_num in ESP32_VARIANT_ADC1_PIN_TO_CHANNEL[variant]
-        ):
-            chan = ESP32_VARIANT_ADC1_PIN_TO_CHANNEL[variant][pin_num]
-            cg.add(var.set_channel1(chan))
-        elif (
-            variant in ESP32_VARIANT_ADC2_PIN_TO_CHANNEL
-            and pin_num in ESP32_VARIANT_ADC2_PIN_TO_CHANNEL[variant]
-        ):
-            chan = ESP32_VARIANT_ADC2_PIN_TO_CHANNEL[variant][pin_num]
-            cg.add(var.set_channel2(chan))
