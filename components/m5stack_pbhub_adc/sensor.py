@@ -3,7 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import CONF_ID, UNIT_EMPTY, ICON_EMPTY, DEVICE_CLASS_EMPTY
 
-from .. import m5stack_pbhub_ns, CONF_M5STACK_PBHUB_ID
+from ..m5stack_pbhub import m5stack_pbhub, CONF_M5STACK_PBHUB_ID
 
 CONF_CHANNEL = "channel"
 CONF_PIN = "pin"
