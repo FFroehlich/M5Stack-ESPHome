@@ -1,7 +1,6 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/sensor/sensor.h"
 #include "esphome/components/m5stack_pbhub/porthub.h"
 #include "esphome/components/adc/adc_sensor.h"
 
