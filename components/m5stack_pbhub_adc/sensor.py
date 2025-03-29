@@ -10,14 +10,14 @@ from esphome.const import (
     CONF_UPDATE_INTERVAL,
 )
 
-from esphome.components.m5stack_pbhub import m5stack_pbhub_ns
+from esphome.components.m5stack_pbhub import mstack_pbhub_ns
 
 CONF_M5STACK_PBHUB_ID = "m5stack_pbhub_id"
 CONF_CHANNEL = "channel"
 CONF_PIN = "pin"
 
-PbHub = m5stack_pbhub_ns.class_("PortHub", cg.Component)
-PbHubADCSensor = m5stack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
+PbHub = mstack_pbhub_ns.class_("PortHub", cg.Component)
+PbHubADCSensor = mstack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
 
 CONFIG_SCHEMA = adc.adc_sensor_schema(
     unit_of_measurement="V",
