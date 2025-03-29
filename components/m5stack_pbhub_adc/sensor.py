@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import adc, sensor
+from esphome.components.adc.sensor import _attenuation, _sampling_mode
 from esphome.const import (
     CONF_ATTENUATION,
     CONF_ID,
@@ -43,10 +44,10 @@ CONFIG_SCHEMA = CONFIG_SCHEMA = cv.All(
             cv.Required(CONF_PIN): cv.int_range(min=0, max=1),
             cv.Optional(CONF_RAW, default=False): cv.boolean,
             cv.SplitDefault(CONF_ATTENUATION, esp32="0db"): cv.All(
-                cv.only_on_esp32, adc._attenuation
+                cv.only_on_esp32, _attenuation
             ),
             cv.Optional(CONF_SAMPLES, default=1): cv.int_range(min=1, max=255),
-            cv.Optional(CONF_SAMPLING_MODE, default="avg"): adc._sampling_mode,
+            cv.Optional(CONF_SAMPLING_MODE, default="avg"): _sampling_mode,
         }
     )
     .extend(cv.polling_component_schema("60s")),
