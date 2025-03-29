@@ -36,7 +36,7 @@ CONFIG_SCHEMA = CONFIG_SCHEMA = cv.All(
     )
     .extend(
         {
-            cv.Required(CONF_PIN): validate_adc_pin,
+            cv.Required(CONF_PIN): adc.validate_adc_pin,
             cv.GenerateID(): cv.declare_id(PbHubADCSensor),
             cv.Required(CONF_M5STACK_PBHUB_ID): cv.use_id(PbHub),
             cv.Required(CONF_CHANNEL): cv.int_range(min=0, max=5),
