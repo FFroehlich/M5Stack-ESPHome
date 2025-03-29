@@ -8,6 +8,7 @@ from esphome.components.adc.sensor import (
     SAMPLING_MODES,
     CONF_SAMPLES,
     CONF_SAMPLING_MODE,
+    CORE,
     _attenuation, 
     _sampling_mode,
 )
