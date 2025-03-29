@@ -33,7 +33,7 @@ PbHub = mstack_pbhub_ns.class_("PortHub", cg.Component)
 PbHubADCSensor = mstack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
 
 def validate_config(config):
-    adc.validate_config(config)
+    adc.sensor.validate_config(config)
     return config
 
 CONFIG_SCHEMA = CONFIG_SCHEMA = cv.All(
