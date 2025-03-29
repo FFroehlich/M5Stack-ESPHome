@@ -19,11 +19,8 @@ CONF_PIN = "pin"
 PbHub = mstack_pbhub_ns.class_("PortHub", cg.Component)
 PbHubADCSensor = mstack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
 
-CONFIG_SCHEMA = adc.adc_sensor_schema(
-    unit_of_measurement="V",
-    icon="mdi:flash",
-    accuracy_decimals=2,
-).extend({
+
+CONFIG_SCHEMA = adc.adc_sensor_schema().extend({
     cv.GenerateID(): cv.declare_id(PbHubADCSensor),
     cv.Required(CONF_M5STACK_PBHUB_ID): cv.use_id(PbHub),
     cv.Required(CONF_CHANNEL): cv.int_range(min=0, max=5),
