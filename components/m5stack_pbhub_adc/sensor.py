@@ -7,6 +7,7 @@ from esphome.components.m5stack_pbhub import mstack_pbhub_ns, CONF_M5STACK_PBHUB
 
 CONF_CHANNEL = "channel"
 CONF_PIN = "pin"
+CONF_M5STACK_PBHUB_ID = "m5stack_pbhub_id"
 
 PbHub = mstack_pbhub_ns.class_("PortHub", cg.Component)
 PbHubADCSensor = mstack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
