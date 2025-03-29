@@ -1,7 +1,16 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import adc, sensor
-from esphome.components.adc.sensor import _attenuation, _sampling_mode
+from esphome.components.adc.sensor import (
+    ATTENUATION_MODES,
+    ESP32_VARIANT_ADC1_PIN_TO_CHANNEL,
+    ESP32_VARIANT_ADC2_PIN_TO_CHANNEL,
+    SAMPLING_MODES,
+    CONF_SAMPLES,
+    CONF_SAMPLING_MODE,
+    _attenuation, 
+    _sampling_mode,
+)
 from esphome.const import (
     CONF_ATTENUATION,
     CONF_ID,
