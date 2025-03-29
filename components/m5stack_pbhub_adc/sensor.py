@@ -10,7 +10,7 @@ from esphome.const import (
     CONF_UPDATE_INTERVAL,
 )
 
-from esphome.componets.m5stack_pbhub import m5stack_pbhub_ns
+from esphome.components.m5stack_pbhub import m5stack_pbhub_ns
 
 CONF_M5STACK_PBHUB_ID = "m5stack_pbhub_id"
 CONF_CHANNEL = "channel"
