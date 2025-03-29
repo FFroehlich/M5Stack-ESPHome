@@ -2,7 +2,6 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/m5stack_pbhub/porthub.h"
-#include "esphome/components/adc/adc_sensor.h"
 
 namespace esphome {
 namespace m5stack_pbhub {
