@@ -3,13 +3,13 @@ import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import CONF_ID, UNIT_EMPTY, ICON_EMPTY, DEVICE_CLASS_EMPTY
 
-from esphome.components.m5stack_pbhub import m5stack_pbhub_ns, CONF_M5STACK_PBHUB_ID
+from esphome.components.m5stack_pbhub import mstack_pbhub_ns, CONF_M5STACK_PBHUB_ID
 
 CONF_CHANNEL = "channel"
 CONF_PIN = "pin"
 
-PbHub = m5stack_pbhub_ns.class_("PortHub", cg.Component)
-PbHubADCSensor = m5stack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
+PbHub = mstack_pbhub_ns.class_("PortHub", cg.Component)
+PbHubADCSensor = mstack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
 
 CONFIG_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_EMPTY,
