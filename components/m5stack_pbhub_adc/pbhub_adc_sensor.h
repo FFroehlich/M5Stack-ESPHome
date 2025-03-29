@@ -13,13 +13,6 @@ class PbHubADCSensor : public adc::ADCSensor, public PollingComponent {
   PbHubADCSensor(PortHub *parent, uint8_t channel, uint8_t pin)
       : parent_(parent), channel_(channel), pin_(pin) {}
 
-  void update() override {
-    // Compute register address for the given channel/pin
-    uint8_t reg = channel_ * 10 + pin_;  // Example encoding
-    uint16_t raw = parent_->hub_a_sample(reg);
-    this->publish_state(voltage);
-  }
-
  protected:
   PortHub *parent_;
   uint8_t channel_;
