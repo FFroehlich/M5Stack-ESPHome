@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import adc
+from esphome.components import adc, sensor
 from esphome.const import (
     CONF_ID,
     CONF_UNIT_OF_MEASUREMENT,
