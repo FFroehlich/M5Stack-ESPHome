@@ -1,22 +1,29 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
-from esphome.const import CONF_ID, UNIT_EMPTY, ICON_EMPTY, DEVICE_CLASS_EMPTY
+from esphome.const import (
+    CONF_ID,
+    CONF_UNIT_OF_MEASUREMENT,
+    CONF_ICON,
+    CONF_ACCURACY_DECIMALS,
+    CONF_DEVICE_CLASS,
+    CONF_UPDATE_INTERVAL,
+)
 
-from esphome.components.m5stack_pbhub import mstack_pbhub_ns
+from .. import m5stack_pbhub_ns
 
+CONF_M5STACK_PBHUB_ID = "m5stack_pbhub_id"
 CONF_CHANNEL = "channel"
 CONF_PIN = "pin"
-CONF_M5STACK_PBHUB_ID = "m5stack_pbhub_id"
 
-PbHub = mstack_pbhub_ns.class_("PortHub", cg.Component)
-PbHubADCSensor = mstack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
+PbHub = m5stack_pbhub_ns.class_("PortHub", cg.Component)
+PbHubADCSensor = m5stack_pbhub_ns.class_("PbHubADCSensor", sensor.Sensor, cg.PollingComponent)
 
 CONFIG_SCHEMA = sensor.sensor_schema(
-    unit_of_measurement=UNIT_EMPTY,
-    icon=ICON_EMPTY,
+    unit_of_measurement="V",
+    icon="mdi:flash",
     accuracy_decimals=2,
-    device_class=DEVICE_CLASS_EMPTY
+    device_class=None,
 ).extend({
     cv.GenerateID(): cv.declare_id(PbHubADCSensor),
     cv.Required(CONF_M5STACK_PBHUB_ID): cv.use_id(PbHub),
