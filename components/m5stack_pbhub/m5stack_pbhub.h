@@ -26,7 +26,7 @@ class M5StackPBHUBComponent : public Component, public i2c::I2CDevice {
 
   void dump_config() override;
 
-  PortHub *portHub;
+  PortHub *portHub{nullptr};
   bool read_gpio_();
   bool write_gpio_();
   /// Mask for the pin mode - 1 means output, 0 means input
