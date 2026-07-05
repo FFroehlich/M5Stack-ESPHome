@@ -72,6 +72,9 @@ if (pin==10){
 void M5StackPBHUBComponent::pin_mode(uint8_t pin, gpio::Flags flags) {
  // No pin mode configuration required
 }
+uint16_t M5StackPBHUBComponent::analog_read(uint8_t channel) {
+  return portHub->hub_a_read_value(HUB_ADDR[channel]);
+}
 bool M5StackPBHUBComponent::read_gpio_() {
   //Not implemented
   return true;
