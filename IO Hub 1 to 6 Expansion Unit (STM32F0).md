@@ -23,7 +23,7 @@ i2c:
   sda: 16 # I2C SDA Pin (Yellow grove cable)
   scl: 17 # I2C SCL Pin (White grove cable)
 
-#Pin numberring in the PbHUB (The first digit is the channel number and the second digit is the pin number)
+#Pin numbering in the PbHUB (The first digit is the channel number and the second digit is the pin number)
 # CHANNEL 0 : 00 and 01
 # CHANNEL 1 : 10 and 11
 # CHANNEL 2 : 20 and 21
@@ -32,7 +32,7 @@ i2c:
 # CHANNEL 5 : 50 and 51
 m5stack_pbhub:
   - id: 'M5Stack_HUB'
-    address: 0x61 # Base I2C Address
+    address: 0x61 # (optional) Base I2C Address (default: 0x61)
 
 # Link the m5stack_pbhub to a switch 
 switch:

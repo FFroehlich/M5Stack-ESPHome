@@ -20,7 +20,7 @@ void M5StackPBHUBComponent::setup() {
 }
 void M5StackPBHUBComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "PBHUB:");
-  LOG_I2C_DEVICE(this)
+  LOG_I2C_DEVICE(this);
 
   if (this->is_failed()) {
     ESP_LOGE(TAG, "Communication with PBHUB failed!");
