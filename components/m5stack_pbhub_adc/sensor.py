@@ -13,7 +13,6 @@ from esphome.components.m5stack_pbhub import mstack_pbhub_ns, M5StackPBHUBCompon
 
 CONF_M5STACK_PBHUB_ID = "m5stack_pbhub_id"
 CONF_CHANNEL = "channel"
-CONF_PIN = "pin"
 
 PbHubADCSensor = mstack_pbhub_ns.class_(
     "PbHubADCSensor", sensor.Sensor, cg.PollingComponent
@@ -31,7 +30,6 @@ CONFIG_SCHEMA = (
         {
             cv.Required(CONF_M5STACK_PBHUB_ID): cv.use_id(M5StackPBHUBComponent),
             cv.Required(CONF_CHANNEL): cv.int_range(min=0, max=5),
-            cv.Required(CONF_PIN): cv.int_range(min=0, max=1),
             cv.Optional(CONF_RAW, default=False): cv.boolean,
         }
     )
@@ -41,9 +39,7 @@ CONFIG_SCHEMA = (
 
 async def to_code(config):
     parent = await cg.get_variable(config[CONF_M5STACK_PBHUB_ID])
-    var = cg.new_Pvariable(
-        config[CONF_ID], parent, config[CONF_CHANNEL], config[CONF_PIN]
-    )
+    var = cg.new_Pvariable(config[CONF_ID], parent, config[CONF_CHANNEL])
     await sensor.register_sensor(var, config)
     await cg.register_component(var, config)
 

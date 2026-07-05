@@ -9,8 +9,8 @@ namespace m5stack_pbhub {
 
 class PbHubADCSensor : public sensor::Sensor, public PollingComponent {
  public:
-  PbHubADCSensor(M5StackPBHUBComponent *parent, uint8_t channel, uint8_t pin)
-      : parent_(parent), channel_(channel), pin_(pin) {}
+  PbHubADCSensor(M5StackPBHUBComponent *parent, uint8_t channel)
+      : parent_(parent), channel_(channel) {}
 
   void update() override;
   void dump_config() override;
@@ -20,7 +20,6 @@ class PbHubADCSensor : public sensor::Sensor, public PollingComponent {
  protected:
   M5StackPBHUBComponent *parent_;
   uint8_t channel_;
-  uint8_t pin_;
   bool raw_{false};
 };
 

@@ -21,7 +21,6 @@ void PbHubADCSensor::update() {
 void PbHubADCSensor::dump_config() {
   LOG_SENSOR(TAG, "PBHUB ADC Sensor", this);
   ESP_LOGCONFIG(TAG, "  Channel: %u", this->channel_);
-  ESP_LOGCONFIG(TAG, "  Pin: %u", this->pin_);
   LOG_UPDATE_INTERVAL(this);
 }
 
