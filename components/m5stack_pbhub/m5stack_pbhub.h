@@ -2,15 +2,14 @@
 
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
-//#include "esphome/components/i2c/i2c.h"
+#include "esphome/components/i2c/i2c.h"
 #include "porthub.h"
 namespace esphome {
 namespace m5stack_pbhub {
 
-class M5StackPBHUBComponent : public Component/*, public i2c::I2CDevice*/ {
+class M5StackPBHUBComponent : public Component, public i2c::I2CDevice {
  public:
   M5StackPBHUBComponent() = default;
-
 
   /// Check i2c availability and setup masks
   void setup() override;
@@ -24,23 +23,16 @@ class M5StackPBHUBComponent : public Component/*, public i2c::I2CDevice*/ {
   float get_setup_priority() const override;
 
   void dump_config() override;
-  void set_sda_pin(uint8_t sda){this->sda_ = sda ;}
-  void set_scl_pin(uint8_t scl){this->scl_ = scl ;}
-  void set_address(uint8_t addr){this->address_ = addr ;}
-  void scan_devices(TwoWire *wire_ );
-  bool read_gpio_();
+
   PortHub *portHub;
+  bool read_gpio_();
   bool write_gpio_();
-  uint8_t sda_ ;
-  uint8_t scl_ ;
-  uint8_t address_ ;
   /// Mask for the pin mode - 1 means output, 0 means input
   uint16_t mode_mask_{0x00};
   /// The mask to write as output state - 1 means HIGH, 0 means LOW
   uint16_t output_mask_{0x00};
   /// The state read in read_gpio_ - 1 means HIGH, 0 means LOW
   uint16_t input_mask_{0x00};
- 
 };
 
 /// Helper class to expose a M5Stack PBHUB pin as an internal input GPIO pin.

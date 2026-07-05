@@ -1,128 +1,69 @@
 #include "porthub.h"
 
-PortHub::PortHub() {
-}
+using esphome::i2c::I2CDevice;
 
-PortHub::PortHub(uint8_t iic_addr, TwoWire *wire_) {
-    _iic_addr = iic_addr;
-    this->wire = wire_ ;
-}
+PortHub::PortHub() {}
 
-void PortHub::begin() {
-    Wire.begin();
-}
+PortHub::PortHub(I2CDevice *device) : device_(device) {}
 
 uint16_t PortHub::hub_a_read_value(uint8_t reg) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x06);
-    this->wire->endTransmission();
-
-    uint8_t RegValue_L, RegValue_H;
-
-    this->wire->requestFrom((int)_iic_addr, (int)2);
-    while (this->wire->available()) {
-        RegValue_L = this->wire->read();
-        RegValue_H = this->wire->read();
-    }
-
-    return (RegValue_H << 8) | RegValue_L;
+    uint8_t data[2] = {0, 0};
+    this->device_->read_bytes(reg | 0x06, data, 2);
+    return (uint16_t(data[1]) << 8) | data[0];
 }
 
 uint8_t PortHub::hub_d_read_value_A(uint8_t reg) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x04);
-    this->wire->endTransmission();
-
-    uint8_t RegValue;
-
-    this->wire->requestFrom((int)_iic_addr, (int)1);
-    while (this->wire->available()) {
-        RegValue = this->wire->read();
-    }
-    return RegValue;
+    uint8_t data = 0;
+    this->device_->read_bytes(reg | 0x04, &data, 1);
+    return data;
 }
 
 uint8_t PortHub::hub_d_read_value_B(uint8_t reg) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x05);
-    this->wire->endTransmission();
-
-    uint8_t RegValue;
-
-    this->wire->requestFrom((int)_iic_addr, (int)1);
-    while (this->wire->available()) {
-        RegValue = this->wire->read();
-    }
-    return RegValue;
+    uint8_t data = 0;
+    this->device_->read_bytes(reg | 0x05, &data, 1);
+    return data;
 }
 
 void PortHub::hub_d_wire_value_A(uint8_t reg, uint16_t level) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x00);
-    this->wire->write(level & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = level & 0xff;
+    this->device_->write_bytes(reg | 0x00, &data, 1);
 }
 
 void PortHub::hub_d_wire_value_B(uint8_t reg, uint16_t level) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x01);
-    this->wire->write(level & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = level & 0xff;
+    this->device_->write_bytes(reg | 0x01, &data, 1);
 }
 
 void PortHub::hub_a_wire_value_A(uint8_t reg, uint16_t duty) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x02);
-    this->wire->write(duty & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = duty & 0xff;
+    this->device_->write_bytes(reg | 0x02, &data, 1);
 }
 
 void PortHub::hub_a_wire_value_B(uint8_t reg, uint16_t duty) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x03);
-    this->wire->write(duty & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = duty & 0xff;
+    this->device_->write_bytes(reg | 0x03, &data, 1);
 }
 
 void PortHub::hub_wire_length(uint8_t reg, uint16_t length) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x08);
-    this->wire->write(length & 0xff);
-    this->wire->write(length >> 8);
-    this->wire->endTransmission();
+    uint8_t data[2] = {uint8_t(length & 0xff), uint8_t(length >> 8)};
+    this->device_->write_bytes(reg | 0x08, data, 2);
 }
 
 void PortHub::hub_wire_index_color(uint8_t reg, uint16_t num, uint8_t r,
                                    int8_t g, uint8_t b) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x09);
-    this->wire->write(num & 0xff);
-    this->wire->write(num >> 8);
-    this->wire->write(r);
-    this->wire->write(g);
-    this->wire->write(b);
-    this->wire->endTransmission();
+    uint8_t data[5] = {uint8_t(num & 0xff), uint8_t(num >> 8), r, uint8_t(g), b};
+    this->device_->write_bytes(reg | 0x09, data, 5);
 }
 
 void PortHub::hub_wire_fill_color(uint8_t reg, uint16_t first, uint16_t count,
                                   uint8_t r, int8_t g, uint8_t b) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x0a);
-    this->wire->write(first & 0xff);
-    this->wire->write(first >> 8);
-
-    this->wire->write(count & 0xff);
-    this->wire->write(count >> 8);
-
-    this->wire->write(r);
-    this->wire->write(g);
-    this->wire->write(b);
-    this->wire->endTransmission();
+    uint8_t data[7] = {uint8_t(first & 0xff), uint8_t(first >> 8),
+                       uint8_t(count & 0xff), uint8_t(count >> 8),
+                       r,                     uint8_t(g),
+                       b};
+    this->device_->write_bytes(reg | 0x0a, data, 7);
 }
 
 void PortHub::hub_wire_setBrightness(uint8_t reg, uint8_t brightness) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x0b);
-    this->wire->write(brightness & 0xff);
-    this->wire->endTransmission();
+    this->device_->write_bytes(reg | 0x0b, &brightness, 1);
 }

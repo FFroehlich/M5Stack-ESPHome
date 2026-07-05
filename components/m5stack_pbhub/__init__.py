@@ -11,15 +11,14 @@ from esphome.const import (
     CONF_OUTPUT,
 )
 
-#DEPENDENCIES = ["i2c"]
+DEPENDENCIES = ["i2c"]
 MULTI_CONF = True
-CONF_SDA_PIN = "sda"
-CONF_SCL_PIN = "scl"
-CONF_ADDRESS = "address"
 
 mstack_pbhub_ns = cg.esphome_ns.namespace("m5stack_pbhub")
 
-M5StackPBHUBComponent = mstack_pbhub_ns.class_("M5StackPBHUBComponent", cg.Component)
+M5StackPBHUBComponent = mstack_pbhub_ns.class_(
+    "M5StackPBHUBComponent", cg.Component, i2c.I2CDevice
+)
 PBHUBGPIOPin = mstack_pbhub_ns.class_("PBHUBGPIOPin", cg.GPIOPin)
 
 CONF_M5StackPBHUB = "m5stack_pbhub"
@@ -27,24 +26,18 @@ CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.Required(CONF_ID): cv.declare_id(M5StackPBHUBComponent),
-            cv.Required(CONF_SDA_PIN): int,
-            cv.Required(CONF_SCL_PIN): int,
-            cv.Required(CONF_ADDRESS): int,
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
-    #.extend(i2c.i2c_device_schema(0x21))
+    .extend(i2c.i2c_device_schema(0x61))
 )
 
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-    #await i2c.register_i2c_device(var, config)
-    cg.add(var.set_sda_pin(config[CONF_SDA_PIN]))
-    cg.add(var.set_scl_pin(config[CONF_SCL_PIN]))
-    cg.add(var.set_address(config[CONF_ADDRESS]))
-    
+    await i2c.register_i2c_device(var, config)
+
 
 
 def validate_mode(value):
