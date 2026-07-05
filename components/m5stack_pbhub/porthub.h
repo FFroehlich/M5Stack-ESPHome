@@ -28,6 +28,8 @@ class PortHub {
 
     uint8_t hub_d_read_value_A(uint8_t reg);
     uint8_t hub_d_read_value_B(uint8_t reg);
+    uint16_t hub_a_read_value_A(uint8_t reg);
+    uint16_t hub_a_read_value_B(uint8_t reg);
 
     void hub_d_wire_value_A(uint8_t reg, uint16_t level);
     void hub_d_wire_value_B(uint8_t reg, uint16_t level);

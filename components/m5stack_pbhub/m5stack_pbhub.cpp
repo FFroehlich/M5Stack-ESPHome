@@ -47,6 +47,11 @@ bool M5StackPBHUBComponent::digital_read(uint8_t pin) {
   return portHub->hub_d_read_value_A(HUB_ADDR[pin2]);
   
 }
+
+uint16_t M5StackPBHUBComponent::analog_read(uint8_t channel) {
+  return portHub->hub_a_read_value(HUB_ADDR[channel]);
+}
+
 void M5StackPBHUBComponent::digital_write(uint8_t pin, bool value) {
   //ESP_LOGCONFIG(TAG, "PIN : %d ", pin) ;
   uint8_t val = value? 0xFF: 0 ;

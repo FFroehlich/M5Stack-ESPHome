@@ -1,4 +1,7 @@
 #include "porthub.h"
+#include "esphome/core/log.h"
+
+static const char *const TAG = "m5stack_pbhub";
 
 PortHub::PortHub() {
 }
@@ -17,13 +20,15 @@ uint16_t PortHub::hub_a_read_value(uint8_t reg) {
     this->wire->write(reg | 0x06);
     this->wire->endTransmission();
 
-    uint8_t RegValue_L, RegValue_H;
+    uint8_t RegValue_L = 0;
+    uint8_t RegValue_H = 0;
 
-    this->wire->requestFrom((int)_iic_addr, (int)2);
-    while (this->wire->available()) {
-        RegValue_L = this->wire->read();
-        RegValue_H = this->wire->read();
+    if (this->wire->requestFrom((int)_iic_addr, 2) != 2) {
+      ESP_LOGW(TAG, "I2C read failed");
+      return 0;
     }
+    RegValue_L = this->wire->read();  // First byte = LSB
+    RegValue_H = this->wire->read();  // Second byte = MSB
 
     return (RegValue_H << 8) | RegValue_L;
 }
