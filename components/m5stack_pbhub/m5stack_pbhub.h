@@ -13,9 +13,9 @@ class M5StackPBHUBComponent : public Component, public i2c::I2CDevice {
 
   /// Check i2c availability and setup masks
   void setup() override;
-  /// Helper function to read the value of a pin.
+  /// Helper function to read the digital value of a pin.
   bool digital_read(uint8_t pin);
-  /// Helper function to write the value of a pin.
+  /// Helper function to write the digital value of a pin.
   void digital_write(uint8_t pin, bool value);
   /// Helper function to set the pin mode of a pin.
   void pin_mode(uint8_t pin, gpio::Flags flags);
