@@ -1,133 +1,92 @@
 #include "porthub.h"
 #include "esphome/core/log.h"
 
-static const char *const TAG = "m5stack_pbhub";
+using esphome::i2c::ERROR_OK;
+using esphome::i2c::I2CDevice;
 
-PortHub::PortHub() {
-}
+static const char *const TAG = "m5stack_pbhub.porthub";
 
-PortHub::PortHub(uint8_t iic_addr, TwoWire *wire_) {
-    _iic_addr = iic_addr;
-    this->wire = wire_ ;
-}
+PortHub::PortHub() {}
 
-void PortHub::begin() {
-    Wire.begin();
-}
+PortHub::PortHub(I2CDevice *device) : device_(device) {}
 
+// The PBHUB's STM32F030 firmware can't handle a combined write-then-read
+// transaction (I2CDevice::read_bytes() issues a single transaction with a
+// repeated START, which times out against this device) -- it needs the
+// register-select write and the value read done as two separate
+// transactions, each with its own STOP, exactly like the Arduino Wire
+// beginTransmission()/endTransmission() + requestFrom() sequence this used
+// to be.
 uint16_t PortHub::hub_a_read_value(uint8_t reg) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x06);
-    this->wire->endTransmission();
-
-    uint8_t RegValue_L = 0;
-    uint8_t RegValue_H = 0;
-
-    if (this->wire->requestFrom((int)_iic_addr, 2) != 2) {
-      ESP_LOGW(TAG, "I2C read failed");
+    uint8_t reg_byte = reg | 0x06;
+    uint8_t data[2] = {0, 0};
+    if (this->device_->write(&reg_byte, 1) != ERROR_OK || this->device_->read(data, 2) != ERROR_OK) {
+      ESP_LOGW(TAG, "Analog read failed");
       return 0;
     }
-    RegValue_L = this->wire->read();  // First byte = LSB
-    RegValue_H = this->wire->read();  // Second byte = MSB
-
-    return (RegValue_H << 8) | RegValue_L;
+    return (uint16_t(data[1]) << 8) | data[0];
 }
 
 uint8_t PortHub::hub_d_read_value_A(uint8_t reg) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x04);
-    this->wire->endTransmission();
-
-    uint8_t RegValue;
-
-    this->wire->requestFrom((int)_iic_addr, (int)1);
-    while (this->wire->available()) {
-        RegValue = this->wire->read();
+    uint8_t reg_byte = reg | 0x04;
+    uint8_t data = 0;
+    if (this->device_->write(&reg_byte, 1) != ERROR_OK || this->device_->read(&data, 1) != ERROR_OK) {
+      ESP_LOGW(TAG, "Digital read A failed");
+      return 0;
     }
-    return RegValue;
+    return data;
 }
 
 uint8_t PortHub::hub_d_read_value_B(uint8_t reg) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x05);
-    this->wire->endTransmission();
-
-    uint8_t RegValue;
-
-    this->wire->requestFrom((int)_iic_addr, (int)1);
-    while (this->wire->available()) {
-        RegValue = this->wire->read();
+    uint8_t reg_byte = reg | 0x05;
+    uint8_t data = 0;
+    if (this->device_->write(&reg_byte, 1) != ERROR_OK || this->device_->read(&data, 1) != ERROR_OK) {
+      ESP_LOGW(TAG, "Digital read B failed");
+      return 0;
     }
-    return RegValue;
+    return data;
 }
 
 void PortHub::hub_d_wire_value_A(uint8_t reg, uint16_t level) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x00);
-    this->wire->write(level & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = level & 0xff;
+    this->device_->write_bytes(reg | 0x00, &data, 1);
 }
 
 void PortHub::hub_d_wire_value_B(uint8_t reg, uint16_t level) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x01);
-    this->wire->write(level & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = level & 0xff;
+    this->device_->write_bytes(reg | 0x01, &data, 1);
 }
 
 void PortHub::hub_a_wire_value_A(uint8_t reg, uint16_t duty) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x02);
-    this->wire->write(duty & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = duty & 0xff;
+    this->device_->write_bytes(reg | 0x02, &data, 1);
 }
 
 void PortHub::hub_a_wire_value_B(uint8_t reg, uint16_t duty) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x03);
-    this->wire->write(duty & 0xff);
-    this->wire->endTransmission();
+    uint8_t data = duty & 0xff;
+    this->device_->write_bytes(reg | 0x03, &data, 1);
 }
 
 void PortHub::hub_wire_length(uint8_t reg, uint16_t length) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x08);
-    this->wire->write(length & 0xff);
-    this->wire->write(length >> 8);
-    this->wire->endTransmission();
+    uint8_t data[2] = {uint8_t(length & 0xff), uint8_t(length >> 8)};
+    this->device_->write_bytes(reg | 0x08, data, 2);
 }
 
 void PortHub::hub_wire_index_color(uint8_t reg, uint16_t num, uint8_t r,
                                    int8_t g, uint8_t b) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x09);
-    this->wire->write(num & 0xff);
-    this->wire->write(num >> 8);
-    this->wire->write(r);
-    this->wire->write(g);
-    this->wire->write(b);
-    this->wire->endTransmission();
+    uint8_t data[5] = {uint8_t(num & 0xff), uint8_t(num >> 8), r, uint8_t(g), b};
+    this->device_->write_bytes(reg | 0x09, data, 5);
 }
 
 void PortHub::hub_wire_fill_color(uint8_t reg, uint16_t first, uint16_t count,
                                   uint8_t r, int8_t g, uint8_t b) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x0a);
-    this->wire->write(first & 0xff);
-    this->wire->write(first >> 8);
-
-    this->wire->write(count & 0xff);
-    this->wire->write(count >> 8);
-
-    this->wire->write(r);
-    this->wire->write(g);
-    this->wire->write(b);
-    this->wire->endTransmission();
+    uint8_t data[7] = {uint8_t(first & 0xff), uint8_t(first >> 8),
+                       uint8_t(count & 0xff), uint8_t(count >> 8),
+                       r,                     uint8_t(g),
+                       b};
+    this->device_->write_bytes(reg | 0x0a, data, 7);
 }
 
 void PortHub::hub_wire_setBrightness(uint8_t reg, uint8_t brightness) {
-    this->wire->beginTransmission(_iic_addr);
-    this->wire->write(reg | 0x0b);
-    this->wire->write(brightness & 0xff);
-    this->wire->endTransmission();
+    this->device_->write_bytes(reg | 0x0b, &brightness, 1);
 }

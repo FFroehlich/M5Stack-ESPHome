@@ -1,7 +1,8 @@
 #ifndef __PORTHUB_H__
 #define __PORTHUB_H__
 
-#include <Wire.h>
+#include <cstdint>
+#include "esphome/components/i2c/i2c.h"
 
 #define IIC_ADDR1 0x61
 #define IIC_ADDR2 0x62
@@ -21,15 +22,12 @@
 class PortHub {
    public:
     PortHub();
-    PortHub(uint8_t iic_addr, TwoWire *wire);
-    void begin();
+    explicit PortHub(esphome::i2c::I2CDevice *device);
 
     uint16_t hub_a_read_value(uint8_t reg);
 
     uint8_t hub_d_read_value_A(uint8_t reg);
     uint8_t hub_d_read_value_B(uint8_t reg);
-    uint16_t hub_a_read_value_A(uint8_t reg);
-    uint16_t hub_a_read_value_B(uint8_t reg);
 
     void hub_d_wire_value_A(uint8_t reg, uint16_t level);
     void hub_d_wire_value_B(uint8_t reg, uint16_t level);
@@ -47,12 +45,8 @@ class PortHub {
 
     void hub_wire_setBrightness(uint8_t reg, uint8_t brightness);
 
-   public:
    private:
-    TwoWire *wire;
-    uint8_t _iic_addr = IIC_ADDR1;
-
-   private:
+    esphome::i2c::I2CDevice *device_{nullptr};
 };
 
 #endif

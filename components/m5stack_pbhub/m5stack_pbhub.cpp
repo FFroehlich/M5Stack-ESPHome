@@ -11,29 +11,25 @@ static const char *const TAG = "m5stack_pbhub";
 
 void M5StackPBHUBComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up M5Stack PBHUB...");
-  ESP_LOGCONFIG(TAG, "I2C Address : %x ",this->address_);
-  ESP_LOGCONFIG(TAG, "SDA : %d ; SCL :  %d ", this->sda_ , this->scl_);
-  Wire.begin(this->sda_ , this->scl_) ;
-  /*Wire.beginTransmission(this->address_);
-  if(Wire.endTransmission()!=0){
-    // Check if there is a device connected 
-     ESP_LOGE(TAG, "PBHUB not available under 0x%02X", this->address_);
-     this->mark_failed();
-     return;
-  }*/
-  this->portHub = new PortHub(this->address_, &Wire);
-  
-  
+  if (this->read(nullptr, 0) != i2c::ERROR_OK) {
+    ESP_LOGE(TAG, "PBHUB not available under 0x%02X", this->address_);
+    this->mark_failed();
+    return;
+  }
+  this->portHub = new PortHub(this);
 }
 void M5StackPBHUBComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "PBHUB:");
-  //LOG_I2C_DEVICE(this)
-  
+  LOG_I2C_DEVICE(this);
+
   if (this->is_failed()) {
     ESP_LOGE(TAG, "Communication with PBHUB failed!");
   }
 }
 bool M5StackPBHUBComponent::digital_read(uint8_t pin) {
+  if (this->portHub == nullptr) {
+    return false;
+  }
   if (pin==0){
     return portHub->hub_d_read_value_B(HUB_ADDR[pin]);
   }else if(pin==1){
@@ -49,10 +45,16 @@ bool M5StackPBHUBComponent::digital_read(uint8_t pin) {
 }
 
 uint16_t M5StackPBHUBComponent::analog_read(uint8_t channel) {
+  if (this->portHub == nullptr) {
+    return 0;
+  }
   return portHub->hub_a_read_value(HUB_ADDR[channel]);
 }
 
 void M5StackPBHUBComponent::digital_write(uint8_t pin, bool value) {
+  if (this->portHub == nullptr) {
+    return;
+  }
   //ESP_LOGCONFIG(TAG, "PIN : %d ", pin) ;
   uint8_t val = value? 0xFF: 0 ;
   /*if (pin==0){
@@ -92,37 +94,6 @@ bool M5StackPBHUBComponent::write_gpio_() {
   //Not implemented
   return true;
 }
-void M5StackPBHUBComponent::scan_devices(TwoWire *wire_ ){
-  uint8_t error, address;
-  int nDevices;
-
-  ESP_LOGCONFIG(TAG,"Scanning...");
-
-  nDevices = 0;
-  for(address = 1; address < 127; address++ ) 
-  {
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
-    // a device did acknowledge to the address.
-    wire_->beginTransmission(address);
-    error = wire_->endTransmission();
-
-    if (error == 0)
-    {
-      ESP_LOGCONFIG(TAG,"I2C device found at address : %x", address);
-      nDevices++;
-    }
-    else if (error==4) 
-    {
-     ESP_LOGCONFIG(TAG,"Unknown error at address : %x", address);
-    }    
-  }
-  if (nDevices == 0)
-   ESP_LOGCONFIG(TAG,"No I2C devices found");
-  else
-    ESP_LOGCONFIG(TAG, "done Searching \n");
-}
-
 float M5StackPBHUBComponent::get_setup_priority() const { return setup_priority::IO; }
 
 void PBHUBGPIOPin::setup() { pin_mode(flags_); }

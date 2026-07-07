@@ -8,15 +8,9 @@ PbHUB Unit is a 6-channel expansion Unit with I2C control. Each Port B interface
 ![image](https://user-images.githubusercontent.com/162461/226787771-71f4fde0-d306-4885-8c91-d4b4156db560.png)
 
 
-Under your "esphome" section of your yaml, you'll need to add some additional includes / libraries:
-<pre>
-esphome:
-  name: pbhub-test
-  libraries:
-    - Wire
-</pre>
-
-Then you can add the main configuration for the unit:
+The PBHUB communicates over ESPHome's native `i2c` component, so declare an
+`i2c` bus in your yaml (instead of the old `sda`/`scl` keys on `m5stack_pbhub`
+itself):
 <pre>
 external_components:
   - source:
@@ -25,7 +19,11 @@ external_components:
       ref: main
     components: m5stack_pbhub
 
-#Pin numberring in the PbHUB (The first digit is the channel number and the second digit is the pin number)
+i2c:
+  sda: 16 # I2C SDA Pin (Yellow grove cable)
+  scl: 17 # I2C SCL Pin (White grove cable)
+
+#Pin numbering in the PbHUB (The first digit is the channel number and the second digit is the pin number)
 # CHANNEL 0 : 00 and 01
 # CHANNEL 1 : 10 and 11
 # CHANNEL 2 : 20 and 21
@@ -34,9 +32,7 @@ external_components:
 # CHANNEL 5 : 50 and 51
 m5stack_pbhub:
   - id: 'M5Stack_HUB'
-    address: 0x61 # Base I2C Address
-    sda: 16 # I2C SDA Pin (Yellow grove cable)
-    scl: 17 # I2C SCL Pin (White grove cable)
+    address: 0x61 # (optional) Base I2C Address (default: 0x61)
 
 # Link the m5stack_pbhub to a switch 
 switch:
